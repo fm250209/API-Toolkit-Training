@@ -1,9 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0-SNAPSHOT-oas3
-  title: ?lesson 1?
-servers:
-  - url: /v1
+  title: lesson 9
 paths:
   /producer:
     post:
@@ -22,6 +20,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
+  /consumer:
+    get:
+      description: receive messages
+      operationId: receiveMessage
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+servers:
+  - url: /v1
 components:
   schemas:
     Message:

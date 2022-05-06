@@ -1,0 +1,43 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  jms: com.ncr.tx.apitoolkit.actions.common.jms.JmsApiCall
+  consumerAction: com.ncr.tx.apitoolkit.training.ConsumerAction
+
+lists:
+  - list: sendMessage
+    steps:
+      - action: log
+        parameters:
+          logAll: true
+      - action: copy
+        parameters:
+          copyfield.ext.request.body.content: int.request.body
+      - action: jms
+        parameters:
+          jms.brokerUrl: "tcp://activemq:61616"
+          jms.requestQueue: "MsgQueue"
+          jms.messageType: "text"
+          jms.waitForReply: "true"
+
+      - action: copy
+        parameters:
+          copyfield.int.response.body: ext.response.body.content
+
+  - list: receiveMessage
+    steps:
+      - action: log
+        parameters:
+          logAll: true
+      - action: consumerAction
+        parameters:
+          brokerUrl: "tcp://activemq:61616"
+          # the subscription model is either Topic or Queue
+          subscriptionModel: "Queue"
+          name: "MsgQueue"
+          timeout: "30000"
+          replyText: "Hello from Consumer!"
+      - action: copy
+        parameters:
+          copyfield.consumerActionResult: ext.response.body.content

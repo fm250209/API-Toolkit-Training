@@ -8,6 +8,7 @@ services:
     - "18081:18081"
     environment:
       - "TX_INFINITY_DEVELOPMENT=win"
+      - "ACCOUNT_URL=/accounts"
     volumes:
     - .:/opt/tx-apitoolkit-service/app
   apitoolkit-ui:
