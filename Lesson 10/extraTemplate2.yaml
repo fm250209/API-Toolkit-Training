@@ -1,6 +1,0 @@
-template:
-  type: object
-  properties:
-    extra2:
-      type: string
-      value: "extra 2"
