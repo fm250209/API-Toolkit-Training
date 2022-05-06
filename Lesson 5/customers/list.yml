@@ -1,0 +1,17 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  rest: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall
+
+lists:
+- list: getCustomer
+  steps:
+  - call: accounts-api/getCustomerAccounts
+  - action: copy
+    parameters:
+
+      set.ext.response.status.code: 200
+      set.ext.response.body.name: Joe Smith
+      set.ext.response.body.address: 20 Oak St
+

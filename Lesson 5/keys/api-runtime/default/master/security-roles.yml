@@ -1,0 +1,8 @@
+roles:
+  txTeller:
+    description: Access to teller functions
+    permissions:
+      - TxApplication.createAccount
+      - TxApplication.queryAccounts
+      - TxApplication.getBalance
+      - TxApplication.getCustomer

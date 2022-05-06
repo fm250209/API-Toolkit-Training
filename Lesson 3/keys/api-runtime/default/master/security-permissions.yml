@@ -1,0 +1,7 @@
+permissions:
+  TxApplication.createAccount:
+    description: Create an account
+  TxApplication.queryAccounts:
+    description: Query accounts
+  TxApplication.getBalance:
+    description: Retrieve account balance

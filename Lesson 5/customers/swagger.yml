@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: “lesson 4”
+x-ncr-sec-app: TxApplication
+security:
+  - ncr-bearer-jwt: []
+paths:
+  '/customers/{id}':
+    get:
+      description: Retrieve the specified customer by id
+      operationId: customers/getCustomer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+servers:
+  - url: /v1
+components:
+  securitySchemes:
+    ncr-bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAccount'
+    CustomerAccount:
+      type: object
+      properties:
+        balance:
+          type: integer
+        id:
+          type: integer
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+            - checking
+            - savings

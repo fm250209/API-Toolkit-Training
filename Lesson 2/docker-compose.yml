@@ -1,0 +1,25 @@
+version: '3'
+services:
+  lesson2:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+      - "TX_INFINITY_DEVELOPMENT=win"
+      - "METRICS_ENABLED=true"
+      - "BRANCH_TO_CLONE=main"
+      - "API_DEF_GIT_URL=https://fm250209@github.com/fm250209/Training.git"
+      - "TX_APITOOLKIT_GIT_PASSWORD=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"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+   image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.4.0-latest
+   ports:
+   - "8090:8090"
+
+  csp-customer-documentation:
+    image: ncr-csp-docker-snapshots.jfrog.io/csp-customer-documentation:2.8.0-779
+    ports:
+    - "8070:8080"

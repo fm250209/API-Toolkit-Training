@@ -1,0 +1,32 @@
+version: '3'
+services:
+  lesson8:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+    - "TX_INFINITY_DEVELOPMENT=win"
+    - "swaggerUI=true"
+    - "MESSAGE_BROKER_URL=kafka:9092"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+    image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.4.0-latest
+    ports:
+    - "8090:8090"
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+    - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+    - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock

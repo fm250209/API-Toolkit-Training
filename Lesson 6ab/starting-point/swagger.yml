@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: “lesson 6”
+paths:
+  /parallelHelper:
+    post:
+      description: parallel
+      operationId: parallelHelper
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParallelHelperResponse'
+  '/parallelHelper2/{id}':
+    get:
+      description: parallel2
+      operationId: parallelHelper2
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParallelHelper2Response'
+  /listProcessing:
+    post:
+      description: Try features
+      operationId: listProcessing
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProcessingResponse'
+        '500':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProcessingResponse'
+  /mapHelp:
+    post:
+      description: test map endpoint
+      operationId: mapHelp
+      responses:
+        '200':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapResponse'
+
+  /branch:
+    get:
+      description: test branch endpoint
+      operationId: getBranch
+      responses:
+        '200':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BranchMissingResponse'
+
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BranchMissingResponse'
+
+servers:
+  - url: /v1
+components:
+  schemas:
+    ListProcessingResponse:
+      type: object
+      properties:
+        accountData:
+          type: array
+          items:
+            type: object
+            properties:
+              accountShortName:
+                type: string
+              accountNumber:
+                type: string
+              accountType:
+                type: string
+              productCode:
+                type: string
+              renumbered:
+                type: boolean
+              currentBalance:
+                type: string
+              availableBalance:
+                type: string
+              accountId:
+                type: string
+        customerData:
+          type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: string
+            name:
+              type: string
+        standings:
+          type: array
+          items:
+            type: object
+            properties:
+              accountNumber:
+                type: string
+              standing:
+                type: string
+        status:
+          type: string
+        data:
+          type: string
+    BranchMissingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: string
+    ParallelHelperResponse:
+      type: object
+      properties:
+        data:
+          type: string
+    ParallelHelper2Response:
+      type: object
+      properties:
+        accountData:
+          type: array
+          items:
+            type: object
+            properties:
+              accountShortName:
+                type: string
+              accountNumber:
+                type: string
+              accountType:
+                type: string
+              productCode:
+                type: string
+              renumbered:
+                type: boolean
+              currentBalance:
+                type: string
+              availableBalance:
+                type: string
+              accountId:
+                type: string
+        customerData:
+          type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: string
+            name:
+              type: string
+    MapResponse:
+      type: object
+      properties:
+        standing:
+          type: string

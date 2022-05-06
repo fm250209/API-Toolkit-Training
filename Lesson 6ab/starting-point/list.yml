@@ -1,0 +1,304 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  rest-parallel: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall
+lists:
+- list: parallelOne
+  steps:
+  - action: copy
+    parameters:
+      set.int.request.body.data: '1'
+  - action: rest-parallel
+    parameters:
+      rest.method: post
+      rest.baseUri: /v1
+      rest.path: "/parallelHelper"
+
+- list: parallelTwo
+  steps:
+    - action: copy
+      parameters:
+        set.int.request.body.data: '2'
+    - action: rest-parallel
+      parameters:
+        rest.method: post
+        rest.baseUri: /v1
+        rest.path: "/parallelHelper"
+- list: parallelThree
+  steps:
+    - action: copy
+      parameters:
+        set.int.request.body.data: '3'
+    - action: rest-parallel
+      parameters:
+        rest.method: post
+        rest.baseUri: /v1
+        rest.path: "/parallelHelper"
+
+- list: parallelFour
+  steps:
+    - action: copy
+      parameters:
+        set.int.request.body.data: '4'
+    - action: rest-parallel
+      parameters:
+        rest.method: post
+        rest.baseUri: /v1
+        rest.path: "/parallelHelper"
+
+- list: parallelFive
+  steps:
+    - action: copy
+      parameters:
+        set.int.request.body.data: '5'
+    - action: rest-parallel
+      parameters:
+        rest.method: post
+        rest.baseUri: /v1
+        rest.path: "/parallelHelper"
+
+- list: parallelHelper
+  steps:
+  - if: "fields['ext.request.body.data'] eq '1'"
+    steps:
+    - action: copy
+      parameters:
+        set.ext.response.body.data: 10
+        set.ext.response.status.code: 200
+  - else-if: "fields['ext.request.body.data'] eq '2'"
+    steps:
+    - action: copy
+      parameters:
+        set.ext.response.body.data: 20
+        set.ext.response.status.code: 200
+  - else-if: "fields['ext.request.body.data'] eq '3'"
+    steps:
+    - action: copy
+      parameters:
+        set.ext.response.body.data: 30
+        set.ext.response.status.code: 200
+  - else-if: "fields['ext.request.body.data'] eq '4'"
+    steps:
+    - action: copy
+      parameters:
+        set.ext.response.body.data: 40
+        set.ext.response.status.code: 200
+  - else: ""
+    steps:
+    - action: copy
+      parameters:
+        set.ext.response.body.data: 50
+        set.ext.response.status.code: 200
+- list: customerData
+  steps:
+  - action: copy
+    parameters:
+      set.ext.response.body.customerData.name: "Test Customer"
+      set.ext.response.body.customerData.type: "R"
+      set.ext.response.body.customerData.id: "000680116939159592"
+      set.ext.response.status.code: 200
+- list: accountData
+  steps:
+  - action: copy
+    parameters:
+      set.ext.response.body.accountData#0#.accountNumber: "153700005215"
+      set.ext.response.body.accountData#0#.accountShortName: "Test Customer CHK AC"
+      set.ext.response.body.accountData#0#.accountType: "40"
+      set.ext.response.body.accountData#0#.accountId: "c31f7fbf-9c58-4f89-9ebe-9efc108a8246"
+      set.ext.response.body.accountData#0#.productCode: "DDA"
+      set.ext.response.body.accountData#0#.renumbered: false
+      set.ext.response.body.accountData#0#.currentBalance: "300010"
+      set.ext.response.body.accountData#0#.availableBalance: "456200"
+      set.ext.response.body.accountData#1#.accountNumber: "153700005216"
+      set.ext.response.body.accountData#1#.accountShortName: "Test Customer SAV AC"
+      set.ext.response.body.accountData#1#.accountType: "41"
+      set.ext.response.body.accountData#1#.accountId: "c31f7fbf-9c58-4f89-9ebe-9efc108a8245"
+      set.ext.response.body.accountData#1#.productCode: "DDA"
+      set.ext.response.body.accountData#1#.renumbered: false
+      set.ext.response.body.accountData#1#.currentBalance: "35000"
+      set.ext.response.body.accountData#1#.availableBalance: "42003"
+      set.ext.response.status.code: 200
+- list: parallelHelper2
+  steps:
+  - if: "fields['ext.request.pathvariable.id'] eq 'cust'"
+    steps:
+    - call: customerData
+  - else-if: "fields['ext.request.pathvariable.id'] eq 'acc'"
+    steps:
+    - call: accountData
+- list: listProcessing
+  finally:
+    - call: exceptionHandler
+    - call: writeEJ
+  steps:
+    - try:
+        - action: rest-parallel
+          parameters:
+            rest.method: get
+            rest.baseUri: /v1
+            rest.path: /branch
+            expected:
+              200: SUCCESS
+            failures:
+              404: BRANCH_NOT_FOUND
+        - if: "{ fields['int.response.status.message'] ne 'SUCCESS' }"
+          steps:
+            - return: exit
+      catch:
+        - call: branchErrorHandler
+
+    - parallel:
+        - action: rest-parallel
+          parameters:
+            rest.method: get
+            rest.baseUri: /v1
+            rest.path: /parallelHelper2/cust
+        - action: rest-parallel
+          parameters:
+            rest.method: get
+            rest.baseUri: /v1
+            rest.path: /parallelHelper2/acc
+    - action: copy
+      parameters:
+        set.testNumber2: 1000
+    - call: loopHelper
+      callIterations: 25
+    - action: copy
+      parameters:
+        set.write.to.ej: true
+    - reduce: int.response.body.accountData
+      parameters:
+        call: calculateTotalBalances
+        identity:
+          totalCurrentBalance: "{ 0l }"
+          totalAvailableBalance: "{ 0l }"
+
+    - filter: int.response.body.accountData
+      parameters:
+        match: "{ filterMap['accountShortName'] eq 'Test Customer SAV AC' }"
+        outputPrefix: savingAccs
+
+    - foreach: savingAccs
+      parameters:
+        call: logBalances
+    - map: int.response.body.accountData
+      parameters:
+        call: getAccountStanding
+        outputPrefix: ext.response.body.standings
+
+
+- list: getBranch
+  steps:
+  - action: copy
+    parameters:
+      set.ext.response.body.status: SUCCESS
+      set.ext.response.status.code: 200
+
+
+- list: branchErrorHandler
+  steps:
+    - if: "fields['int.response.body.status'] != 'SUCCESS'"
+      steps:
+        - action: copy
+          parameters:
+            set.ext.response.status.code: 500
+            set.ext.response.body.status: SERVICE_ERROR
+        - return: exit
+
+
+- list: recursionHelper
+  steps:
+    - if: "fields['testNumber'] > 950"
+      steps:
+        - action: copy
+          parameters:
+            set.testNumber: "{ fields['testNumber'] - 5 }"
+        - call: recursionHelper
+    - else-if: "fields['testNumber'] eq 950"
+      steps:
+        - action: copy
+          parameters:
+            set.testNumber: "{ fields['testNumber'] - (T(java.lang.Math).random() * 750) }"
+- list: loopHelper
+  steps:
+    - if: "fields['testNumber2'] > 950"
+      steps:
+        - action: copy
+          parameters:
+            set.testNumber2: "{ fields['testNumber2'] - 10 }"
+    - else-if: "fields['testNumber2'] == 950"
+      steps:
+        - action: copy
+          parameters:
+            set.testNumber2: "{ fields['testNumber2'] - (T(java.lang.Math).random() * 750) }"
+
+
+
+- list: exceptionHandler
+  steps:
+    - if: "fields['*ListException'] != null"
+      steps:
+        - action: copy
+          parameters:
+            set.ext.response.body.status: FAILURE
+            set.ext.response.status.code: 500
+
+
+- list: writeEJ
+  steps:
+    - if: "fields['write.to.ej'] == true"
+      steps:
+        - action: copy
+          parameters:
+            set.ext.response.body.status: SUCCESS
+            set.ext.response.body.data: EJ_WRITTEN
+            set.ext.response.status.code: 200
+    - else: ""
+      steps:
+        - action: copy
+          parameters:
+            set.ext.response.body.status: KINDA SUCCESS
+            set.ext.response.body.data: EJ_NOT_WRITTEN
+            set.ext.response.status.code: 200
+- list: calculateTotalBalances
+  steps:
+    - action: copy
+      sequence:
+        - convert.current.availableBalance: long
+        - convert.current.currentBalance: long
+        - set.accumulator.totalCurrentBalance: "{ fields['accumulator.totalCurrentBalance'] + fields['current.currentBalance'] }"
+        - set.accumulator.totalAvailableBalance: "{ fields['accumulator.totalAvailableBalance'] + fields['current.availableBalance'] }"
+
+
+- list: logBalances
+  steps:
+    - action: log
+      parameters:
+        format:
+          - "Savings Account Balance: %s": current.currentBalance
+            "Savings Account Balance 2: %s": current.availableBalance
+            logLevel: INFO
+
+
+- list: getAccountStanding
+  steps:
+    - action: copy
+      sequence:
+        - copyfield.current.accountNumber: int.request.body.accountNumber
+        - delete.current.*: ""
+        - copyfield.int.request.body.accountNumber: current.accountNumber
+    - action: rest-parallel
+      parameters:
+        rest.method: post
+        rest.baseUri: /v1
+        rest.path: "/mapHelp"
+        expected:
+          200: SUCCESS
+        failures:
+          500: IMPOSSIBLE
+    - action: copy
+      parameters:
+        move.int.response.body.standing: current.standing
+
+

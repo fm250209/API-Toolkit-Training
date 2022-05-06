@@ -1,0 +1,14 @@
+ncr-action-list: 0.1
+import:
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  customAction: com.ncr.tx.apitoolkit.training.MyCustomAction
+
+lists:
+  - list: invokeCustomAction
+    steps:
+      - action: customAction
+        parameters:
+          inputString: abcdefghijkl
+      - action: copy
+        parameters:
+          copyfield.myCustomResult: ext.response.body.myCustomResult

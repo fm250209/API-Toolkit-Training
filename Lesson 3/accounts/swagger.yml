@@ -1,0 +1,91 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: ?lesson 1?
+x-ncr-sec-app: TxApplication
+servers:
+- url: /v1
+paths:
+
+  /accounts/{id}:
+    get:
+      description: Get balance.
+      operationId: accounts/getBalance
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+
+  /accounts:
+    post:
+      description: Create account
+      operationId: accounts/createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '201':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+    
+    get:
+      description: Query for accounts by customerId
+      operationId: accounts/queryAccounts
+      parameters:
+      - in: query
+        name: customerId
+        required: true
+        description: Customer Id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+      
+
+
+components:
+  securitySchemes:
+    ncr-bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Account:
+      type: object
+      properties:
+        balance:
+          type: integer
+        id:
+          type: integer
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+            - checking
+            - savings
+
+security:
+  - ncr-bearer-jwt: []

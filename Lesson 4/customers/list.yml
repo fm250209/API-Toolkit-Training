@@ -1,0 +1,25 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  rest: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall
+
+lists:
+- list: getCustomer
+  steps:
+  - action: copy
+    parameters:
+      copyfield.ext.request.pathvariable.id: int.request.query.customerId
+  - action: rest
+    parameters:
+      rest.baseUri: /v1
+      rest.method: get
+      rest.path: "{ env['ACCOUNT_URL'] }"
+      security.token.policy: forward
+  - action: copy
+    parameters:
+      move.int.response.body: ext.response.body.accounts
+      set.ext.response.status.code: 200
+      set.ext.response.body.name: Joe Smith
+      set.ext.response.body.address: 20 Oak St
+      copyfield.ext.request.pathvariable.id: ext.response.body.id

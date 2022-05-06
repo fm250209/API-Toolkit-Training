@@ -1,0 +1,21 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  rest: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall
+
+lists:
+  - list: getCustomerAccounts
+    steps:
+      - action: copy
+        parameters:
+          copyfield.ext.request.pathvariable.id: int.request.query.customerId
+      - action: rest
+        parameters:
+          security.token.policy: forward
+          rest.baseUri: /v1
+          rest.method: get
+          rest.path: "{ env['ACCOUNT_URL'] }"
+      - action: copy
+        parameters:
+          move.int.response.body: ext.response.body.accounts

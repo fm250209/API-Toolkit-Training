@@ -1,0 +1,17 @@
+version: '3'
+services:
+  lesson6:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+      - "TX_INFINITY_DEVELOPMENT=win"
+      - "SWAGGER_UI_ENABLED"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+   image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.4.0-latest
+   ports:
+   - "8090:8090"

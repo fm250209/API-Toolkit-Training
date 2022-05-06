@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: lesson 7
+paths:
+  /invokeCustomAction:
+    get:
+      description: Invoke custom action
+      operationId: invokeCustomAction
+      responses:
+        default:
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvokeCustomActionResponse'
+servers:
+  - url: /v1
+components:
+  schemas:
+    InvokeCustomActionResponse:
+      type: object

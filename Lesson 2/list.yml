@@ -1,0 +1,52 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+
+lists:
+  - list: getBalance
+    steps:
+      - action: copy
+        parameters:
+          set.ext.response.status.code: 200
+          copyfield.ext.request.pathvariable.id: ext.response.body.id
+          set.ext.response.body.type: 'checking'
+          set.ext.response.body.label: 'my checking account'
+          set.ext.response.body.balance: 500000
+
+  - list: createAccount
+    steps:
+      - action: log
+      - action: copy
+        parameters:
+          set.ext.response.body.id: 4169896789
+          copyfield.ext.request.body.type: ext.response.body.type
+          copyfield.ext.request.body.label: ext.response.body.label
+          set.ext.response.body.balance: 50000
+          set.ext.response.status.code: 201
+          set.ext.response.headers.Location: "/v1/accounts/1234"
+
+  - list: queryAccounts
+    steps:
+      - action: log
+      - action: copy
+        parameters:
+          set.ext.response.status.code: 200
+          set.ext.response.body#0#.id: 9896
+          set.ext.response.body#0#.type: checking
+          set.ext.response.body#0#.label: My checking account
+          set.ext.response.body#0#.balance: 50000
+          set.ext.response.body#1#.id: 2345
+          set.ext.response.body#1#.type: savings
+          set.ext.response.body#1#.label: My savings account
+          set.ext.response.body#1#.balance: 200000
+      - if: "fields['ext.request.query.customerId'] eq '2'"
+        steps:
+          - action: copy
+            parameters:
+              set.ext.response.body#1#.id: 6666
+      - else: ""
+        steps:
+          - action: copy
+            parameters:
+              set.ext.response.body#1#.id: 7777

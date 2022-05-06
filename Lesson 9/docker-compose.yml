@@ -1,0 +1,21 @@
+version: '3'
+services:
+  lesson9:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+      - "TX_INFINITY_DEVELOPMENT=win"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+   image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.4.0-latest
+   ports:
+   - "8090:8090"
+  activemq:
+    image: ncr-csp-docker-snapshots.jfrog.io/tx-activemq:2.32.0-latest
+    ports:
+      - "61616:61616"
+      - "8161:8161"

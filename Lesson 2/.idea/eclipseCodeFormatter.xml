@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EclipseCodeFormatterProjectSettings">
+    <option name="selectedGlobalProfile">
+      <Settings>
+        <option name="formatter" value="ECLIPSE" />
+        <option name="id" value="1650403000717" />
+        <option name="importOrderConfigFilePath" value="$USER_HOME$/csp-developer/formatters/eclipse-csp.importorder" />
+        <option name="importOrderFromFile" value="true" />
+        <option name="name" value="CSP" />
+        <option name="pathToConfigFileJava" value="$USER_HOME$/csp-developer/formatters/eclipse-csp-code-formatter.xml" />
+        <option name="selectedJavaProfile" value="OCTX" />
+      </Settings>
+    </option>
+  </component>
+</project>
