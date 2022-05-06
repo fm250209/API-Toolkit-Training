@@ -7,154 +7,153 @@ import:
   unsubscribe: com.ncr.tx.apitoolkit.pubsub.kafka.Unsubscribe
   publish: com.ncr.tx.apitoolkit.pubsub.kafka.Publish
 
-
 lists:
-  - list: chat
+- list: chat
+  parameters:
+    message.broker.url: "{ env['MESSAGE_BROKER_URL'] }"
+    message.broker.start.topic: latest
+  steps:
+  - action: subscribe
     parameters:
-      message.broker.url: "{ env['MESSAGE_BROKER_URL'] }"
-      message.broker.start.topic: latest
-    steps:
-      - action: subscribe
-        parameters:
-          int.request.topic: presence
-          message.broker.start.topic: earliest
-      - action: flux
-        parameters:
-          list: commands
-          forward: int.request.topic.subscriptions
-      - action: flux
-        parameters:
-          list: received
-          forward: int.request.topic.subscriptions
-  #
-  # Announce the presence of a new user coming online or going offline
-  #
-  - list: commands
+      int.request.topic: presence
+      message.broker.start.topic: earliest
+  - action: flux
     parameters:
-      message.broker.url: "{ env['MESSAGE_BROKER_URL'] }"
-      message.broker.start.topic: latest
+      list: commands
+      forward: int.request.topic.subscriptions
+  - action: flux
+    parameters:
+      list: received
+      forward: int.request.topic.subscriptions
+#
+# Announce the presence of a new user coming online or going offline
+#
+- list: commands
+  parameters:
+    message.broker.url: "{ env['MESSAGE_BROKER_URL'] }"
+    message.broker.start.topic: latest
+  steps:
+  - if: "{ fields['ext.request.body.cmd'] eq 'announce' }"
     steps:
-      - if: "{ fields['ext.request.body.cmd'] eq 'announce' }"
-        steps:
-          - action: copy
-            parameters:
-              copyfield.ext.request.body: int.request.body
+    - action: copy
+      parameters:
+        copyfield.ext.request.body: int.request.body
 
-          # Announce the online status of the user to everybody
-          - action: publish
-            parameters:
-              int.request.topic: presence
+    # Announce the online status of the user to everybody
+    - action: publish
+      parameters:
+        int.request.topic: presence
 
-          # Subscribe to a message topic for the announced user
-          - action: copy
-            parameters:
-              set.int.request.topic: "{ 'message-' + fields['ext.request.body.user'] }"
-          - action: subscribe
+    # Subscribe to a message topic for the announced user
+    - action: copy
+      parameters:
+        set.int.request.topic: "{ 'message-' + fields['ext.request.body.user'] }"
+    - action: subscribe
 
-          # Clear the request fields and set an acknowledgment that the command executed
-          - action: copy
-            sequence:
-              - delete.ext.response.body: true
-              - set.ext.response.body.ack: announce
+    # Clear the request fields and set an acknowledgment that the command executed
+    - action: copy
+      sequence:
+      - delete.ext.response.body: true
+      - set.ext.response.body.ack: announce
 
-      # Send a message to another user
-      - else-if: "{ fields['ext.request.body.cmd'] eq 'message' }"
-        steps:
-          - action: copy
-            sequence:
-              - copyfield.ext.request.body: int.request.body
-              - set.int.request.topic: "{ 'message-' + fields['ext.request.body.user'] }"
-              - set.chat: "{ fields['ext.request.body.chat'] == null ? T(java.util.UUID).randomUUID().toString() : fields['ext.request.body.chat'] }"
-              - copyfield.chat: int.request.body.chat
-          - action: publish
-          - action: copy
-            sequence:
-              - delete.ext.response.body: true
-              - set.ext.response.body.ack: message
-              - copyfield.chat: ext.response.body.chat
-
-      # Join a chat by id
-      - else-if: "{ fields['ext.request.body.cmd'] eq 'join' }"
-        steps:
-          # subscribe to the specified topic using the specified chat id
-          - action: copy
-            sequence:
-              - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
-          - action: subscribe
-            parameters:
-              # when joining, catch up on the entire chat
-              message.broker.start.topic: earliest
-          - action: copy
-            sequence:
-              - set.int.request.body.msg: joined
-              - copyfield.ext.request.body.user: int.request.body.user
-              - copyfield.ext.request.body.chat: int.request.body.chat
-          - action: publish
-          - action: copy
-            sequence:
-              - delete.ext.response.body: true
-              - set.ext.response.body.ack: join
-              - copyfield.ext.request.body.chat: ext.response.body.chat
-
-      # Send to chat id
-      - else-if: "{ fields['ext.request.body.cmd'] eq 'send' }"
-        steps:
-          # publish message to the specified topic using the specified chat id
-          - action: copy
-            sequence:
-              - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
-              - copyfield.ext.request.body.text: int.request.body.text
-              - copyfield.ext.request.body.from: int.request.body.from
-              - copyfield.ext.request.body.chat: int.request.body.chat
-              - set.int.request.body.msg: chat
-          - action: publish
-          - action: copy
-            sequence:
-              - delete.ext.response.body: true
-              - set.ext.response.body.ack: send
-              - copyfield.ext.request.body.chat: ext.response.body.chat
-
-      # Leave a chat by id
-      - else-if: "{ fields['ext.request.body.cmd'] eq 'leave' }"
-        steps:
-          # unsubscribe to the specified topic using the specified chat id
-          - action: copy
-            sequence:
-              - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
-          - action: unsubscribe
-          - action: copy
-            sequence:
-              - set.int.request.body.msg: left
-              - copyfield.ext.request.body.user: int.request.body.user
-              - copyfield.ext.request.body.chat: int.request.body.chat
-          - action: publish
-          - action: copy
-            sequence:
-              - delete.ext.response.body: true
-              - set.ext.response.body.ack: leave
-              - copyfield.ext.request.body.chat: ext.response.body.chat
-
-      - else: ''
-        steps:
-          - action: copy
-            parameters:
-              copyfield.ext.request.body: ext.response.body
-              set.ext.response.body.ack: unknown
-      - action: log
-        parameters:
-          logAll: true
-
-  #
-  # receive subscribed messages
-  #
-  - list: received
+  # Send a message to another user
+  - else-if: "{ fields['ext.request.body.cmd'] eq 'message' }"
     steps:
-      - if: "{ fields['ext.response.body.ack'] == 'unknown' }"
-        steps:
-          - action: copy
-            parameters:
-              move.ext.response.body.cmd: ext.response.body.msg
-              copyfield.ext.response.timestamp: ext.response.body.timestamp
-          - action: log
-            parameters:
-              logAll: true
+    - action: copy
+      sequence:
+      - copyfield.ext.request.body: int.request.body
+      - set.int.request.topic: "{ 'message-' + fields['ext.request.body.user'] }"
+      - set.chat: "{ fields['ext.request.body.chat'] == null ? T(java.util.UUID).randomUUID().toString() : fields['ext.request.body.chat'] }"
+      - copyfield.chat: int.request.body.chat
+    - action: publish
+    - action: copy
+      sequence:
+      - delete.ext.response.body: true
+      - set.ext.response.body.ack: message
+      - copyfield.chat: ext.response.body.chat
+
+  # Join a chat by id
+  - else-if: "{ fields['ext.request.body.cmd'] eq 'join' }"
+    steps:
+    # subscribe to the specified topic using the specified chat id
+    - action: copy
+      sequence:
+      - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
+    - action: subscribe
+      parameters:
+        # when joining, catch up on the entire chat
+        message.broker.start.topic: earliest
+    - action: copy
+      sequence:
+      - set.int.request.body.msg: joined
+      - copyfield.ext.request.body.user: int.request.body.user
+      - copyfield.ext.request.body.chat: int.request.body.chat
+    - action: publish
+    - action: copy
+      sequence:
+      - delete.ext.response.body: true
+      - set.ext.response.body.ack: join
+      - copyfield.ext.request.body.chat: ext.response.body.chat
+
+  # Send to chat id
+  - else-if: "{ fields['ext.request.body.cmd'] eq 'send' }"
+    steps:
+    # publish message to the specified topic using the specified chat id
+    - action: copy
+      sequence:
+      - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
+      - copyfield.ext.request.body.text: int.request.body.text
+      - copyfield.ext.request.body.from: int.request.body.from
+      - copyfield.ext.request.body.chat: int.request.body.chat
+      - set.int.request.body.msg: chat
+    - action: publish
+    - action: copy
+      sequence:
+      - delete.ext.response.body: true
+      - set.ext.response.body.ack: send
+      - copyfield.ext.request.body.chat: ext.response.body.chat
+
+  # Leave a chat by id
+  - else-if: "{ fields['ext.request.body.cmd'] eq 'leave' }"
+    steps:
+    # unsubscribe to the specified topic using the specified chat id
+    - action: copy
+      sequence:
+      - set.int.request.topic: "{ 'chat-' + fields['ext.request.body.chat'] }"
+    - action: unsubscribe
+    - action: copy
+      sequence:
+      - set.int.request.body.msg: left
+      - copyfield.ext.request.body.user: int.request.body.user
+      - copyfield.ext.request.body.chat: int.request.body.chat
+    - action: publish
+    - action: copy
+      sequence:
+      - delete.ext.response.body: true
+      - set.ext.response.body.ack: leave
+      - copyfield.ext.request.body.chat: ext.response.body.chat
+
+  - else: ''
+    steps:
+    - action: copy
+      parameters:
+        copyfield.ext.request.body: ext.response.body
+        set.ext.response.body.ack: unknown
+  - action: log
+    parameters:
+      logAll: true
+
+#
+# receive subscribed messages
+#
+- list: received
+  steps:
+  - if: "{ fields['ext.response.body.ack'] == 'unknown' }"
+    steps:
+    - action: copy
+      parameters:
+        move.ext.response.body.cmd: ext.response.body.msg
+        copyfield.ext.response.timestamp: ext.response.body.timestamp
+    - action: log
+      parameters:
+        logAll: true
