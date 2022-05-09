@@ -1,0 +1,25 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  referCustomer: com.ncr.tx.apitoolkit.training.CustomerAction
+  referAccount: com.ncr.tx.apitoolkit.training.AccountAction
+  referListProcess: com.ncr.tx.apitoolkit.training.ListProcessAction
+  referUnflattened: com.ncr.tx.apitoolkit.training.Unflattened
+
+lists:
+  - list: unflattened
+    steps:
+      - action: referUnflattened
+
+  - list: customerData
+    steps:
+      - action: referCustomer
+
+  - list: accountData
+    steps:
+      - action: referAccount
+
+  - list: listProcessing
+    steps:
+      - action: referListProcess

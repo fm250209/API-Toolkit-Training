@@ -3,6 +3,8 @@ import:
   log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
   copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
   rest-parallel: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall 
+  queryAction: com.ncr.tx.apitoolkit.training.ClientCustomer
+  calculateTotal: com.ncr.tx.apitoolkit.training.CalculateTotal
 
 lists:
 - list: customerData
@@ -35,6 +37,10 @@ lists:
       set.ext.response.body.accountData#1#.availableBalance: "42003"
       set.ext.response.status.code: 200
 
+- list: CalculateTotalList
+  steps:
+  - action: calculateTotal 
+
 - list: parallelHelper
   steps:
   - if: "fields['ext.request.pathvariable.id'] eq 'cust'"
@@ -47,21 +53,23 @@ lists:
 - list: listProcessing
   steps:
   - parallel:
-    - action: rest-parallel
+    - action: queryAction
       parameters:
-        rest.method: get
-        rest.baseUri: /v1
-        rest.path: /parallelHelper/cust
-    - action: rest-parallel
+        id: cust
+    - action: queryAction
       parameters:
-        rest.method: get
-        rest.baseUri: /v1
-        rest.path: /parallelHelper/acc
-  - action: copy
+        id: acc
+  - foreach: response.body.accountData 
     parameters:
-      move.int.response.body.accountData: ext.response.body.accountData
-      move.int.response.body.customerData: ext.response.body.customerData
-
+      call: CalculateTotalList
+  - action: copy
+    parameters:     
+      copyfield.response.body.customerData.name: ext.response.body.name
+      copyfield.response.body.customerData.address: ext.response.body.address
+      copyfield.response.body.accountData#0#.currentBalance: ext.response.body.checkingBalance
+      copyfield.response.body.accountData#1#.currentBalance: ext.response.body.savingsBalance
+      copyfield.totalBalance: ext.response.body.totalBalance
+      set.ext.response.status.code: 200
       
 
 

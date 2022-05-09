@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteRepositoriesConfiguration">
+    <remote-repository>
+      <option name="id" value="csp-maven-group" />
+      <option name="name" value="csp-maven-group" />
+      <option name="url" value="https://ncr.jfrog.io/artifactory/csp-maven-group" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="csp-maven-snapshots" />
+      <option name="name" value="csp-maven-snapshots" />
+      <option name="url" value="https://ncr.jfrog.io/artifactory/csp-maven-snapshots" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="csp-maven-releases" />
+      <option name="name" value="csp-maven-releases" />
+      <option name="url" value="https://ncr.jfrog.io/artifactory/csp-maven-releases" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="third-party-maven-all-group" />
+      <option name="name" value="third-party-maven-all-group" />
+      <option name="url" value="https://ncr.jfrog.io/artifactory/third-party-maven-all-group/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+  </component>
+</project>
