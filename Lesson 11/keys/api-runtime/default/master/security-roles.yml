@@ -1,0 +1,5 @@
+roles:
+  txTeller:
+    description: Access to teller functions
+    permissions:
+      - TxApplication.wsdlService

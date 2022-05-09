@@ -1,0 +1,3 @@
+permissions:
+  TxApplication.wsdlService:
+    description: Access wsdl services

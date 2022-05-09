@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema targetNamespace="http://wsdl.apitoolkit.com/example"
+                  elementFormDefault="qualified"
+                  attributeFormDefault="unqualified"
+                  xmlns="http://wsdl.apitoolkit.com/example"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+                  <xs:element name="request">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="accountType">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:enumeration value="checking"/>
+                              <xs:enumeration value="savings"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="id" type="xs:string"/>
+                    </xs:complexType>
+                 </xs:element>
+
+                 <xs:element name="response">
+                  <xs:complexType>
+                    <xs:choice>
+                      <xs:element name="checking" type="accountDetails"/>
+                      <xs:element name="savings" type="accountDetails"/>
+                    </xs:choice>
+                    <xs:attribute name="id" type="xs:string" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:complexType name="accountDetails">
+                  <xs:sequence>
+                    <xs:element name="accountId" type="xs:string"/>
+                    <xs:element name="balance" type="xs:float"/>
+                  </xs:sequence>
+                  <xs:attribute name="queryDate" type="xs:string"/>
+                </xs:complexType>
+
+                <xs:element name="fault">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="message" type="xs:string"/>
+                    </xs:sequence>
+                 </xs:complexType>
+                </xs:element>
+
+</xs:schema>

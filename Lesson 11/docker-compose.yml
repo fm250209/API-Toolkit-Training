@@ -1,0 +1,33 @@
+version: '3'
+services:
+  lesson11:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+      - "TX_INFINITY_DEVELOPMENT=win"
+      - "TXSECURITY_TRUSTSTORE_DATA_FILE=/opt/tx-apitoolkit-service/app/keys/external-truststore"
+      - "TXSECURITY_TRUSTSTORE_PASSWORD_FILE=/opt/tx-apitoolkit-service/app/keys/external-truststore-password"
+      - "TXSECURITY_KEYSTORE_DATA_FILE=/opt/tx-apitoolkit-service/app/keys/internal-keystore"
+      - "TXSECURITY_KEYSTORE_PASSWORD_FILE=/opt/tx-apitoolkit-service/app/keys/internal-keystore-password"
+      - "TXSECURITY_ISSUER_KEY_ALIAS=internal-signing-key"
+      - "SPRING_CLOUD_CONFIG_URI=file:/opt/tx-apitoolkit-service/app/keys/"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+    image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.2.0-latest
+    ports:
+    - "8090:8090"
+  lesson3-test-auth-server:
+    image: ncr-csp-docker-releases.jfrog.io/tx-authentication-server:2.7.6-36
+    ports:
+    - "18150:8080"
+    environment:
+      - "TXSECURITY_KEYSTORE_DATA_FILE=/etc/token-signing/external-keystore"
+      - "TXSECURITY_KEYSTORE_PASSWORD_FILE=/etc/token-signing/external-keystore-password"
+      - "TXSECURITY_ISSUER_KEY_ALIAS=external-signing-key"
+      - "DEFAULT_TENANT_ID=ncr"
+    volumes:
+      - "./keys/:/etc/token-signing"

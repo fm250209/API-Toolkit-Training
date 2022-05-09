@@ -1,0 +1,45 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+
+
+lists:
+  - list: wsdl-service-first
+    steps:
+      - action: log
+        parameters:
+          logAll: true
+      - if: "fields['ext.request.body.request.@id'] ne '0000'"
+        steps:
+          - action: copy
+            parameters:
+              set.ext.response.status.code: 200
+              set.ext.response.headers.content-type: text/xml
+              set.ext.response.body.response.@xmlns: http://wsdl.apitoolkit.com/example
+              copyfield.ext.request.body.request.@id: ext.response.body.response.@id
+              set.ext.response.body.response#0#.checking.@queryDate: "2019-10-7 10:12:20"
+              set.ext.response.body.response#0#.checking#0#.accountId: "EFG6789"
+              set.ext.response.body.response#0#.checking#1#.balance: 2500000
+      - else: ""
+        steps:
+          - action: copy
+            parameters:
+              set.ext.response.status.code: 500
+              set.ext.response.headers.content-type: text/xml
+              set.ext.response.body.fault.@xmlns: http://wsdl.apitoolkit.com/example
+              set.ext.response.body.fault.message: "Error"
+  - list: wsdl-service-secure
+    steps:
+      - action: log
+        parameters:
+          logAll: true
+      - action: copy
+        parameters:
+          set.ext.response.status.code: 200
+          set.ext.response.headers.content-type: text/xml
+          set.ext.response.body.response.@xmlns: http://wsdl.apitoolkit.com/example
+          copyfield.ext.request.body.request.@id: ext.response.body.response.@id
+          set.ext.response.body.response#0#.savings.@queryDate: "2019-10-8 12:15:50"
+          set.ext.response.body.response#0#.savings#0#.accountId: "ABC1234"
+          set.ext.response.body.response#0#.savings#1#.balance: 10000

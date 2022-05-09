@@ -1,0 +1,79 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:sch="http://wsdl.apitoolkit.com/example" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://wsdl.apitoolkit.com/example" targetNamespace="http://wsdl.apitoolkit.com/example">
+
+    <wsdl:types>
+        <xs:schema xmlns="http://wsdl.apitoolkit.com/example"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+                   elementFormDefault="qualified" targetNamespace="http://wsdl.apitoolkit.com/example">
+            <xs:include schemaLocation="messageFormat.xsd" />
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="actionRequest">
+        <wsdl:part element="tns:request" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="actionResponse">
+        <wsdl:part element="tns:response" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="actionFault">
+        <wsdl:part element="tns:fault" name="parameters" />
+    </wsdl:message>
+
+    <wsdl:portType name="wsdl-example-services">
+        <wsdl:operation name="wsdl-service-first">
+            <wsdl:input message="tns:actionRequest" />
+            <wsdl:output message="tns:actionResponse" />
+            <wsdl:fault name="actionFault" message="tns:actionFault" />
+        </wsdl:operation>
+
+        <wsdl:operation name="wsdl-service-secure">
+            <wsdl:input message="tns:actionRequest" />
+            <wsdl:output message="tns:actionResponse" />
+            <wsdl:fault name="actionFault" message="tns:actionFault" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="wsdl-example-servicesSoap11" xmlns:toolkit="toolkit" toolkit:type="apiKey" toolkit:in="header" toolkit:name="Authorization" toolkit:x-ncr-sec-type="http" toolkit:x-ncr-sec-scheme="bearer" toolkit:x-ncr-sec-bearerFormat="JWT"
+                  type="tns:wsdl-example-services">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="wsdl-service-first" toolkit:security="false">
+            <soap:operation soapAction="" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="secureService" xmlns:toolkit="toolkit" toolkit:type="apiKey" toolkit:in="header" toolkit:name="Authorization" toolkit:x-ncr-sec-type="http" toolkit:x-ncr-sec-scheme="bearer" toolkit:x-ncr-sec-bearerFormat="JWT"
+                  type="tns:wsdl-example-services">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="wsdl-service-secure" toolkit:x-ncr-sec-permission="TxApplication.wsdlService">
+            <soap:operation soapAction="" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="wsdl-example-servicesService">
+        <wsdl:port binding="tns:wsdl-example-servicesSoap11"
+                   name="wsdl-service-first">
+            <soap:address location="/service" />
+        </wsdl:port>
+
+        <wsdl:port binding="tns:secureService"
+                   name="wsdl-service-secure">
+            <soap:address location="/secureService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>
