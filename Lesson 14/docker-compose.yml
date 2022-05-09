@@ -1,0 +1,22 @@
+version: '3'
+services:
+  lesson14:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8000:8000"
+    - "18081:18081"
+    environment:
+      - "TX_INFINITY_DEVELOPMENT=win"
+      - "METRICS_ENABLED=true"
+      - "PRIORITY_PACKAGE_NAME=priority-apis"
+    volumes:
+    - .:/opt/tx-apitoolkit-service/app
+  apitoolkit-ui:
+   image: ncr-csp-docker-snapshots.jfrog.io/tx-apitoolkit-ui:2.4.0-latest
+   ports:
+   - "8090:8090"
+  csp-customer-documentation:
+   image: ncr-csp-docker-snapshots.jfrog.io/csp-customer-documentation:2.8.0-779
+   ports:
+   - "8070:8080"

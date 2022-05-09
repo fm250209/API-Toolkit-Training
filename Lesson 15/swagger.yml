@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: “lesson 15”
+paths:
+  /parallelHelper/{id}:
+    get:
+      description: parallel
+      operationId: parallelHelper
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParallelHelperResponse'
+  /listProcessing:
+    post:
+      description: Try features
+      operationId: listProcessing
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProcessingResponse'
+        '500':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProcessingResponse'
+servers:
+  - url: /v1
+components:
+  schemas:
+    ListProcessingResponse:
+      type: object
+      properties:
+        accountData:
+          type: array
+          items:
+            type: object
+            properties:
+              accountShortName:
+                type: string
+              accountNumber:
+                type: string
+              accountType:
+                type: string
+              productCode:
+                type: string
+              renumbered:
+                type: boolean
+              currentBalance:
+                type: string
+              availableBalance:
+                type: string
+              accountId:
+                type: string
+        customerData:
+          type: object
+          properties:
+            address:
+              type: string
+            name:
+              type: string
+        status:
+          type: string
+        data:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        checkingBalance:
+          type: string
+        savingsBalance:
+          type: string
+        totalBalance:
+          type: string
+    ParallelHelperResponse:
+      type: object
+      properties:
+        accountData:
+          type: array
+          items:
+            type: object
+            properties:
+              accountShortName:
+                type: string
+              accountNumber:
+                type: string
+              accountType:
+                type: string
+              productCode:
+                type: string
+              renumbered:
+                type: boolean
+              currentBalance:
+                type: string
+              availableBalance:
+                type: string
+              accountId:
+                type: string
+        customerData:
+          type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: string
+            name:
+              type: string
+            address:
+              type: string

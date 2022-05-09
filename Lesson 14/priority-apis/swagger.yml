@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: lesson 14
+servers:
+  - url: /v1
+paths:
+  /accounts:
+    post:
+      description: Create Account
+      operationId: createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+        required: true
+      responses:
+        '201':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        balance:
+          type: integer
+          minimum: 100
+        id:
+          type: integer
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+            - checking
+            - savings
+      required:
+        - balance

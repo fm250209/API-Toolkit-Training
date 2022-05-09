@@ -1,0 +1,40 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  jms: com.ncr.tx.apitoolkit.actions.common.jms.JmsApiCall
+
+lists:
+  - list: echoCopybook
+    steps:
+      - action: copy
+        sequence:
+          - set.copybookReq: "{ new com.ncr.tx.apitoolkit.copybook.CopybookParser().parseCopybook(new java.io.File('/opt/tx-apitoolkit-service/app/copybook.cpy')).get(0) }"
+          - set.fixedMessage: "{ T(com.ncr.tx.apitoolkit.messages.CopybookUtils).getFixedMessage('ext.request.body', fields, fields.get('copybookReq')).toString() }"
+          - set.response.status.code: 200
+          - copyfield.ext.request.body: int.request.body
+
+      - action: log
+        parameters:
+          format:
+            - "The message to be sent: %s": "fixedMessage"
+              logLevel: WARN
+
+      - action: jms
+        parameters:
+          jms.host: "{ env['IBM_HOST'] }"
+          jms.port: "{ env['IBM_PORT'] }"
+          jms.manager: QM1
+          jms.requestQueue: DEV.QUEUE.1
+          jms.channel: DEV.APP.SVRCONN
+          jms.replyQueue: DEV.QUEUE.1
+          jms.user: app
+          jms.password: passw0rd
+          jms.messageType: fixed
+          jms.replyTimeoutMs: 5000
+          jms.copybookField: copybookReq
+          jms.replyCopybookField: copybookReq
+      - action: copy
+        parameters:
+          copyfield.int.response.body: ext.response.body
+          set.ext.response.headers.content-type: application/json

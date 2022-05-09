@@ -1,0 +1,67 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  rest-parallel: com.ncr.tx.apitoolkit.actions.common.rest.RestApiCall 
+
+lists:
+- list: customerData
+  steps:
+  - action: copy
+    parameters:
+      set.ext.response.body.customerData.name: "Test Customer"
+      set.ext.response.body.customerData.address: "123 Main Street"
+      set.ext.response.status.code: 200
+
+- list: accountData
+  steps:
+  - action: copy
+    parameters:
+      set.ext.response.body.accountData#0#.accountNumber: "153700005215"
+      set.ext.response.body.accountData#0#.accountShortName: "Test Customer CHK AC"
+      set.ext.response.body.accountData#0#.accountType: "40"
+      set.ext.response.body.accountData#0#.accountId: "c31f7fbf-9c58-4f89-9ebe-9efc108a8246"
+      set.ext.response.body.accountData#0#.productCode: "DDA"
+      set.ext.response.body.accountData#0#.renumbered: false
+      set.ext.response.body.accountData#0#.currentBalance: "300010"
+      set.ext.response.body.accountData#0#.availableBalance: "456200"
+      set.ext.response.body.accountData#1#.accountNumber: "153700005216"
+      set.ext.response.body.accountData#1#.accountShortName: "Test Customer SAV AC"
+      set.ext.response.body.accountData#1#.accountType: "41"
+      set.ext.response.body.accountData#1#.accountId: "c31f7fbf-9c58-4f89-9ebe-9efc108a8245"
+      set.ext.response.body.accountData#1#.productCode: "DDA"
+      set.ext.response.body.accountData#1#.renumbered: true
+      set.ext.response.body.accountData#1#.currentBalance: "35000"
+      set.ext.response.body.accountData#1#.availableBalance: "42003"
+      set.ext.response.status.code: 200
+
+- list: parallelHelper
+  steps:
+  - if: "fields['ext.request.pathvariable.id'] eq 'cust'"
+    steps:
+    - call: customerData
+  - else-if: "fields['ext.request.pathvariable.id'] eq 'acc'"
+    steps:
+    - call: accountData
+
+- list: listProcessing
+  steps:
+  - parallel:
+    - action: rest-parallel
+      parameters:
+        rest.method: get
+        rest.baseUri: /v1
+        rest.path: /parallelHelper/cust
+    - action: rest-parallel
+      parameters:
+        rest.method: get
+        rest.baseUri: /v1
+        rest.path: /parallelHelper/acc
+  - action: copy
+    parameters:
+      move.int.response.body.accountData: ext.response.body.accountData
+      move.int.response.body.customerData: ext.response.body.customerData
+
+      
+
+

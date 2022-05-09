@@ -1,0 +1,17 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+
+lists:
+  - list: createAccount
+    steps:
+      - action: log
+      - action: copy
+        parameters:
+          set.ext.response.body.id: 7777
+          copyfield.ext.request.body.type: ext.response.body.type
+          copyfield.ext.request.body.label: ext.response.body.label
+          copyfield.ext.request.body.balance: ext.response.body.balance
+          set.ext.response.status.code: 201
+          set.ext.response.headers.Location: "/v1/accounts/2345"
