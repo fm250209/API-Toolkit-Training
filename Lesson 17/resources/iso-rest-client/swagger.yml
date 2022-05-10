@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  version: 1.0-SNAPSHOT-oas3
+  title: Lesson 17 ISO Messaging
+servers:
+  - url: /v1
+
+paths:
+  /iso:
+    post:
+      description: SendIsoRequest
+      operationId: sendIso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Request"
+        required: true
+      responses:
+        '200':
+          description: response ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mOut:
+                    type: string
+
+components:
+  schemas:
+    Request:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: string
+        mli:
+          type: string
+        mIn:
+          type: string

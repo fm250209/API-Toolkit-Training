@@ -1,0 +1,86 @@
+ncr-iso-config: 0.1
+mli-bytes: 3
+messages:
+  - message: "0200"
+    x-ncr-list-name: isoList
+    header: ISO015000050
+    fields:
+      - field: paN
+        attributes:
+          num: 3
+          type: NUMERIC
+          length: 6
+      - field: amount
+        attributes:
+          num: 4
+          type: AMOUNT
+      - field: f7
+        attributes:
+          num: 7
+          type: DATE10
+      - field: f11
+        attributes:
+          num: 11
+          type: NUMERIC
+          length: 6
+      - field: f12
+        attributes:
+          num: 12
+          type: TIME
+      - field: f13
+        attributes:
+          num: 13
+          type: DATE4
+      - field: f15
+        attributes:
+          num: 15
+          type: DATE4
+      - field: f17
+        attributes:
+          num: 17
+          type: DATE_EXP
+      - field: f32
+        attributes:
+          num: 32
+          type: LLVAR
+      - field: f35
+        attributes:
+          num: 35
+          type: LLVAR
+      - field: f37
+        attributes:
+          num: 37
+          type: NUMERIC
+          length: 12
+      - field: f41
+        attributes:
+          num: 41
+          type: ALPHA
+          length: 16
+      - field: f43
+        attributes:
+          num: 43
+          type: ALPHA
+          length: 40
+      - field: f48
+        attributes:
+          num: 48
+          type: LLLVAR
+      - field: f49
+        attributes:
+          num: 49
+          type: ALPHA
+          length: 3
+      - field: f60
+        attributes:
+          num: 60
+          type: LLLVAR
+      - field: f61
+        attributes:
+          num: 61
+          type: LLLVAR
+      - field: f100
+        attributes:
+          num: 100
+          type: ALPHA
+          length: 3

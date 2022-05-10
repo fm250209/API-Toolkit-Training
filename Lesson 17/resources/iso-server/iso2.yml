@@ -1,0 +1,33 @@
+ncr-iso-config: 0.1
+mli-bytes: 3
+messages:
+  - message:  "0210"
+    header: ISO015000055
+    extends: "0200"
+    fields:
+      - field: f60
+        attributes:
+          num: 60
+          type: LLLVAR
+        default: "Fixed data from template"
+      - field: f70
+        attributes:
+          num: 70
+          type: ALPHA
+          length: 3
+      - field: f90
+        attributes:
+          num: 90
+          type: ALPHA
+          length: 42
+        default: "Close your eyes, look into the sky and see. I'm just a cruel boy, I'm easy come easy go, little high little low."
+      - field: f102
+        attributes:
+          num: 102
+          type: LLVAR
+        default: "Let's put a smile on that face, and I say Romeo take me somewhere we can be alone"
+      - field: f126
+        attributes:
+          num: 126
+          type: LLLVAR
+        default: "Remember me, though I have to go remember me, each time you string a sad guitar."

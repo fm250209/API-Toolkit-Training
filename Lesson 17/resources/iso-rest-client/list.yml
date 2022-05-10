@@ -1,0 +1,22 @@
+ncr-action-list: 0.1
+import:
+  log: com.ncr.tx.apitoolkit.actions.common.LogParametersAction
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  tcpCall: com.ncr.tx.apitoolkit.actions.common.iso.LengthFieldBasedTcpClient
+
+lists:
+  - list: sendIso
+    description: |
+      Send Iso Request
+    steps:
+      - action: copy
+        parameters:
+          copyfield.ext.request.body.mIn: int.request.body
+          set.int.request.host: "{ getEnv().get('ISO_HOST')}"
+          set.int.request.port: "{ getEnv().get('ISO_PORT')}"
+          set.int.request.mli: "{ getEnv().get('ISO_MLI')}"
+      - action: tcpCall
+
+      - action: copy
+        parameters:
+          copyfield.int.response.body: ext.response.body.mOut

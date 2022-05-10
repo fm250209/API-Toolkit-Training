@@ -1,0 +1,29 @@
+ncr-action-list: 0.1
+import:
+  copy: com.ncr.tx.apitoolkit.actions.common.CopyAction
+  iso: com.ncr.tx.apitoolkit.actions.common.iso.IsoOutboundCall
+
+lists:
+  - list: isoList
+    steps:
+      - action: copy
+        parameters:
+          set.ext.response.body.field_3_paN: 651010
+
+      - if: "{ fields['ext.request.body.field_3_paN'] != '656565'}"
+        steps:
+          - action: copy
+            sequence:
+              - copyfield.ext.request*: int.request
+              #- set.int.request.type: 200
+              - set.int.request.body.field_3_paN: 656565
+
+          - action: iso
+            parameters:
+              iso.host: "{ getEnv().get('ISO_HOST') }"
+              iso.port: "{ getEnv().get('ISO_PORT') }"
+
+          - action: copy
+            sequence:
+              - copyfield.int.response*: ext.response
+              - set.ext.response.body.field_3_paN: "{ T(java.lang.Integer).parseInt(fields['ext.response.body.field_3_paN']) + 10 }"
